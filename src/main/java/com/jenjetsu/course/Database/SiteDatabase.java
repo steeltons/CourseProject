@@ -24,7 +24,12 @@ public class SiteDatabase {
         tree = new AVLTree<>();
         tree.setComparator(((o1, o2) -> o1.getRegion().compareTo(o2.getRegion())));
         table = new HashTable<>();
-        Site[] sites = new ObjectCreator().readSitesFromFile(Constatnces.siteFilepath);
+        Site[] sites = new Site[0];
+        try {
+            sites = new ObjectCreator().readSitesFromFile(Constatnces.siteFilepath);
+        } catch (Exception e) {
+            // Логгер для добавления
+        }
         for(Site site : sites){
             tree.add(site);
             table.put(site.getUrl(), site.getRegion());

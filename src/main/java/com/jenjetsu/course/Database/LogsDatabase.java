@@ -1,42 +1,55 @@
 package com.jenjetsu.course.Database;
 
+import com.jenjetsu.course.Collection.LinkedList;
 import com.jenjetsu.course.Enums.DebugCategory;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class LogsDatabase {
     private static LogsDatabase inner;
-    private ArrayList<String> logsPool;
-    private ArrayList<Map.Entry<DebugCategory, String>> logsPool1;
+    private LinkedList<Map.Entry<DebugCategory, String>> logsPool;
 
     private volatile boolean stop;
 
     private LogsDatabase(){
         stop = false;
-        logsPool = new ArrayList<>();
-        logsPool1 = new ArrayList<>();
-    }
-
-    public void add(String info){
-        if(!stop){
-            logsPool.add(info);
-        }
+        logsPool = new LinkedList<>();
     }
 
     public void add(DebugCategory category, String info){
         if(!stop){
-            logsPool1.add(new AbstractMap.SimpleEntry<DebugCategory, String>(category, info));
+            if(logsPool.size() > 5000){
+                //flushLogs();
+            }
+            logsPool.pushFront(new AbstractMap.SimpleEntry<DebugCategory, String>(category, info));
         }
     }
 
-    public ArrayList<String> getAllLogs(){
-        return logsPool;
+    private void flushLogs(){
+        int size = logsPool.size();
+        LinkedList<Map.Entry<DebugCategory, String>> flushList = new LinkedList<>();
+        while (size > 5000){
+            flushList.add(logsPool.popBack());
+            size--;
+        }
+        try {
+            FileWriter writer = new FileWriter("logs.txt", true);
+            for(Map.Entry<DebugCategory, String> pair : flushList){
+                String line =pair.getKey().toString() + " : "+ pair.getValue()+"\n";
+                writer.write(line);
+                writer.flush();
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
-    public ArrayList<Map.Entry<DebugCategory, String>> getAllLogs1(){
-        return logsPool1;
+    public LinkedList<Map.Entry<DebugCategory, String>> getAllLogs(){
+        return logsPool;
     }
 
     public void startLogging(){

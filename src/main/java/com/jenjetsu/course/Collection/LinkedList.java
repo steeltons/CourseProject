@@ -52,6 +52,21 @@ public class LinkedList<E> implements Iterable<E>{
         size++;
     }
 
+    public void pushFront(E elem){
+        if(isEmpty()){
+            init();
+            head.data = elem;
+            size++;
+        } else {
+            Node node = new Node();
+            node.data = elem;
+            node.pred = null;
+            node.next = head;
+            head = node;
+            size++;
+        }
+    }
+
     public E remove(int index){
         if(isEmpty())
             return null;
@@ -157,7 +172,7 @@ public class LinkedList<E> implements Iterable<E>{
     }
 
     public E last(){
-        return head.data;
+        return lastElem.data;
     }
 
     public E popBack(){

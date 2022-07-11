@@ -26,18 +26,23 @@ public class ProductDatabase {
         tree.setComparator(((o1, o2) -> o1.getType().compareTo(o2.getType())));
         urlTree.setComparator(((o1, o2) -> o1.getUrl().compareTo(o2.getUrl())));
         table = new HashTable<>();
-        Product products[] = new ObjectCreator().readProductsFromFile(Constatnces.productFilepath);
+        Product products[] = new Product[0];
+        try {
+            products = new ObjectCreator().readProductsFromFile(Constatnces.productFilepath);
+        } catch (Exception e) {
+            // Логгер для добавления
+        }
         for(Product pr : products){
             tree.add(pr);
             urlTree.add(pr);
             table.put(pr.createKey(), pr.getType());
         }
-        tree.printTree();
     }
 
     public void add(Product product){
         LogsDatabase.getInstance().startLogging();
         tree.add(product);
+        urlTree.add(product);
         table.put(product.createKey(), product.getType());
     }
 
@@ -54,6 +59,7 @@ public class ProductDatabase {
             String type = table.find(product.createKey());
             product.setType(type);
             tree.remove(product);
+            urlTree.remove(product);
             table.remove(product.createKey());
         }
     }

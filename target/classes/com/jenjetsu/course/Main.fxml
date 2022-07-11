@@ -15,8 +15,17 @@
 
 <VBox fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #2E3348;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jenjetsu.course.Controllers.MainController">
    <children>
-      <MenuBar prefHeight="25.0" prefWidth="223.0">
+      <MenuBar prefHeight="25.0" prefWidth="310.0">
         <menus>
+            <Menu mnemonicParsing="false" text="Menu">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#readSiteFile" text="Read sites" />
+                  <MenuItem mnemonicParsing="false" onAction="#readProductFile" text="Read products" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveSitesToFile" text="Save sites" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveProductsToFile" text="Save products" />
+                  <MenuItem mnemonicParsing="false" onAction="#close" text="close" />
+              </items>
+            </Menu>
             <Menu text="Containers">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#showSiteTableScreen" text="Site HashTable" />
@@ -35,6 +44,11 @@
                 <MenuItem mnemonicParsing="false" onAction="#showSearchScreen" text="Search" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Info">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
+              </items>
+            </Menu>
         </menus>
       </MenuBar>
       <VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="1280.0">
@@ -45,7 +59,7 @@
                      <children>
                         <ScrollPane layoutX="1.0" prefHeight="576.0" prefWidth="640.0">
                            <content>
-                              <TextFlow fx:id="siteScreen" maxWidth="1500.0" minWidth="640.0" prefHeight="575.0" prefWidth="640.0" />
+                              <TextFlow fx:id="siteScreen" maxWidth="1500.0" minWidth="640.0" prefHeight="561.0" prefWidth="659.0" />
                            </content>
                         </ScrollPane>
                      </children>
@@ -54,7 +68,7 @@
                      <children>
                         <ScrollPane layoutX="-2.0" prefHeight="576.0" prefWidth="640.0">
                            <content>
-                              <TextFlow fx:id="productScreen" maxWidth="1500.0" minWidth="640.0" prefHeight="575.0" prefWidth="640.0" />
+                              <TextFlow fx:id="productScreen" maxWidth="1500.0" minWidth="640.0" prefHeight="561.0" prefWidth="651.0" />
                            </content>
                         </ScrollPane>
                      </children>

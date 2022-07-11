@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class ObjectCreator {
 
-    public Product[] readProductsFromFile(String filepath){
+    public Product[] readProductsFromFile(String filepath) throws Exception {
         String lines[] = FileManipulator.readSFromFile(filepath);
         Product array[] = new Product[lines.length];
         int arrayCounter = 0;
@@ -22,7 +22,7 @@ public class ObjectCreator {
         return array;
     }
 
-    public Site[] readSitesFromFile(String filepath){
+    public Site[] readSitesFromFile(String filepath) throws Exception {
         String lines[] = FileManipulator.readSFromFile(filepath);
         Site array[] = new Site[lines.length];
         int arrayCounter = 0;
@@ -35,38 +35,26 @@ public class ObjectCreator {
         return array;
     }
 
-    public Product createProductFromLine(String line){
+    public Product createProductFromLine(String line) throws Exception{
         String words[] = line.split(" ");
-        try {
-            if(words.length > 4)
-                throw new ArrayIndexOutOfBoundsException();
-            String name = words[0];
-            double cost = Double.parseDouble(words[1]);
-            String type = words[2];
-            String url = words[3];
-            return new Product(name, cost, type, url);
-        } catch (ArrayIndexOutOfBoundsException e){
-            System.out.println("Слов в строке меньше 4-ех слов");
-        } catch (ClassCastException e){
-            System.out.println("Неверно введена стоимость товар");
-        }
-        return new Product();
+        String name = words[0];
+        double cost = Double.parseDouble(words[1]);
+        String type = words[2];
+        String url = words[3];
+        return new Product(name, cost, type, url);
     }
 
-    public Site createSiteFormLine(String line){
+    public Site createSiteFormLine(String line) throws Exception{
         String words[] = line.split(" ");
-        try{
-            String url = words[0];
-            String name = words[1];
-            String region = words[2];
-            return new Site(url, name, region);
-        } catch (ArrayIndexOutOfBoundsException e){
-            System.out.println("Слов в строке меньше 3-её");
-        }
-        return new Site();
+        if(words.length != 3)
+            throw new Exception();
+        String url = words[0];
+        String name = words[1];
+        String region = words[2];
+        return new Site(url, name, region);
     }
 
-    public Product createProductFromLineV2(String line){
+    public Product createProductFromLineV2(String line) throws Exception {
         Product tempProduct = createProductFromLine(line);
         StringSearchDriver algorithm = RaitaAlgorithm.Driver(tempProduct.getUrl());
         try {
@@ -86,30 +74,4 @@ public class ObjectCreator {
         return new Product();
     }
 
-    public Site createSiteFromFileV2(String line){
-        Site s = createSiteFormLine(line);
-        String pattern = (s.getUrl().contains("//") ? s.getUrl().substring(s.getUrl().indexOf("//")+2, s.getUrl().lastIndexOf("."))
-                : s.getUrl().substring(s.getUrl().indexOf(".")+1,s.getUrl().lastIndexOf(".")));
-        StringSearchDriver algorithm = RaitaAlgorithm.Driver(pattern);
-        try {
-            Scanner scanner = new Scanner(new File("C:\\Users\\User\\IdeaProjects\\CourseProject\\src\\main\\java\\sites.txt"));
-            StringBuilder builder = new StringBuilder();
-            while (scanner.hasNext()){
-                String url = scanner.next();
-                builder.append(url.substring(url.indexOf(".")+1,url.lastIndexOf("."))+" ");
-                scanner.nextLine();
-            }
-            if(algorithm.search(builder.toString(), false).size() == 0){
-                return s;
-            } else
-                throw new FileNotFoundException("Url сайта повторяется");
-        } catch (FileNotFoundException e) {
-            System.out.println("Сайт повторяется");
-        }
-        return new Site();
-    }
-
-    public void removeProduct(String productName){
-
-    }
 }

@@ -1,13 +1,16 @@
 package com.jenjetsu.course.Controllers;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 
-import com.jenjetsu.course.Collection.CircleList;
+import com.jenjetsu.course.Business.EntityCreator;
+import com.jenjetsu.course.Business.ReadFilesLogic;
+import com.jenjetsu.course.Business.SaveFilesLogic;
 import com.jenjetsu.course.Collection.LinkedList;
 import com.jenjetsu.course.Database.ProductDatabase;
 import com.jenjetsu.course.Database.ScreenTextDatabase;
@@ -15,18 +18,15 @@ import com.jenjetsu.course.Database.SiteDatabase;
 import com.jenjetsu.course.Entity.Product;
 import com.jenjetsu.course.Entity.ProductKey;
 import com.jenjetsu.course.Entity.Site;
-import com.jenjetsu.course.HelloApplication;
+import com.jenjetsu.course.Stages.AboutStage;
+import com.jenjetsu.course.Stages.LogStage;
+import com.jenjetsu.course.Stages.SearchStage;
 import com.jenjetsu.course.utils.ObjectCreator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -40,7 +40,6 @@ public class MainController {
     @FXML private TextField nameSite;
     @FXML private TextField typeProduct;
     @FXML private TextField regionSite;
-    @FXML private Button searchButton;
     @FXML private TextField urlProduct;
     @FXML private TextField urlSite;
 
@@ -67,14 +66,7 @@ public class MainController {
             showAlertMessage("Field error","Ошибка ввода, проверьте поля");
             return;
         }
-        ProductDatabase database = ProductDatabase.getInstance();
-        if(!database.contains(new ProductKey(nameProduct.getText(), urlProduct.getText())) || ! SiteDatabase.getInstance().contains(urlProduct.getText())){
-            Product product = new ObjectCreator().createProductFromLine(nameProduct.getText()+" "+Double.parseDouble(priceProduct.getText())+" "+typeProduct.getText()+" "+urlProduct.getText());
-            database.add(product);
-            ScreenTextDatabase.getInstance().displayProduct(product.toString());
-        } else {
-            showAlertMessage("Product create error","Продукт с таким именеи и URL "+nameProduct.getText()+" "+urlProduct.getText()+" уже существует");
-        }
+        new EntityCreator().createProduct(nameProduct.getText(), priceProduct.getText(), typeProduct.getText(), urlProduct.getText());
     }
 
     @FXML
@@ -95,14 +87,7 @@ public class MainController {
             showAlertMessage("Field error","Ошибка ввода, проверьте поля");
             return;
         }
-        SiteDatabase database = SiteDatabase.getInstance();
-        if(!database.contains(urlSite.getText().replace("https://","www.")) && !database.contains(urlSite.getText().replace("www.","https://"))){
-            Site site = new ObjectCreator().createSiteFormLine(urlSite.getText() + " "+ nameSite.getText() + " " + regionSite.getText());
-            database.add(site);
-            ScreenTextDatabase.getInstance().displaySite(site.toString());
-        } else {
-            showAlertMessage("Site create error","Сайт с URL "+urlSite.getText()+" уже существует");
-        }
+        new EntityCreator().createSite(urlSite.getText(), nameSite.getText(), regionSite.getText());
     }
 
     @FXML
@@ -257,25 +242,15 @@ public class MainController {
 
     @FXML
     void showLogScreen(ActionEvent event) throws IOException {
-        File file = new File("C:\\Users\\User\\IdeaProjects\\Course\\src\\main\\resources\\com\\jenjetsu\\course\\LoggerView.fxml");
-        FXMLLoader loader = new FXMLLoader(file.toURL());
-        Stage stage = new Stage();
-        stage.setTitle("Search");
-        stage.initModality(Modality.WINDOW_MODAL);
-        Scene scene = new Scene(loader.load(), 600, 800);
-        stage.setScene(scene);
+        Stage stage = new LogStage();
+        stage.initOwner(regionSite.getScene().getWindow());
         stage.show();
     }
 
     @FXML
     void showSearchScreen(ActionEvent event) throws IOException {
-        File file = new File("C:\\Users\\User\\IdeaProjects\\Course\\src\\main\\resources\\com\\jenjetsu\\course\\SearchView.fxml");
-        FXMLLoader loader = new FXMLLoader(file.toURL());
-        Stage stage = new Stage();
-        stage.setTitle("Search");
-        stage.initModality(Modality.WINDOW_MODAL);
-        Scene scene = new Scene(loader.load(), 450, 650);
-        stage.setScene(scene);
+        SearchStage stage = new SearchStage();
+        stage.initOwner(regionSite.getScene().getWindow());
         stage.show();
     }
 
@@ -321,6 +296,40 @@ public class MainController {
         alert.setContentText(message);
         alert.setHeaderText("Result");
         alert.showAndWait();
+    }
+
+    @FXML
+    void readProductFile(ActionEvent event) throws FileNotFoundException {
+        new ReadFilesLogic().readSites();
+    }
+
+    @FXML
+    void readSiteFile(ActionEvent event) throws FileNotFoundException {
+        new ReadFilesLogic().readProducts();
+    }
+
+    @FXML
+    private void saveSitesToFile(ActionEvent event){
+        new SaveFilesLogic().saveSites();
+    }
+
+    @FXML
+    private void saveProductsToFile(ActionEvent event){
+        new SaveFilesLogic().saveProducts();
+    }
+
+    @FXML
+    private void close(ActionEvent event){
+        Stage stage = (Stage) priceProduct.getScene().getWindow();
+        stage.close();
+    }
+
+    @FXML
+    private void about(){
+        Stage currentStage = (Stage) regionSite.getScene().getWindow();
+        Stage about = new AboutStage();
+        about.initOwner(currentStage);
+        about.show();
     }
 
     private void setDefault(){
