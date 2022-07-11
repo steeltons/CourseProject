@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jenjetsu.course.Controllers.HashTableController">
+   <children>
+      <TableView fx:id="tab" prefHeight="600.0" prefWidth="700.0">
+        <columns>
+          <TableColumn fx:id="index" prefWidth="53.0" text="INDEX" />
+          <TableColumn fx:id="key" prefWidth="159.0" text="KEY" />
+            <TableColumn fx:id="value" prefWidth="421.0" text="VALUE" />
+            <TableColumn fx:id="removed" prefWidth="76.0" text="REMOVED" />
+        </columns>
+      </TableView>
+   </children>
+</VBox>

@@ -1,0 +1,16 @@
+www.aliexpress.com -> Intel_Core_i5_8400 26520.0 PROCESSOR www.aliexpress.com
+www.aliexpress.com -> Intel_Core_i5_10400 19490.0 PROCESSOR www.aliexpress.com
+www.aliexpress.com -> Intel_Core_i5_12500 31990.0 PROCESSOR www.aliexpress.com
+www.aliexpress.com -> AMD_Ryzen_3_PRO_2200G 16990.0 PROCESSOR www.aliexpress.com
+www.aliexpress.com -> Intel_Core_i3_10320 17990.0 PROCESSOR www.aliexpress.com
+www.aliexpress.com -> Intel_Core_i5_12400 28890.0 PROCESSOR www.aliexpress.com
+www.aliexpress.com -> Intel_Core_i7_9700 41990.0 PROCESSOR www.aliexpress.com
+www.aliexpress.com -> Intel_Core_i3_9100F 11790.0 PROCESSOR www.aliexpress.com
+www.aliexpress.com -> AMD_Ryzen_3_1200 9490.0 PROCESSOR www.aliexpress.com
+www.slada.com -> AMD_Ryzen_5_2600 18590.0 PROCESSOR www.slada.com
+www.slada.com -> Intel_Core_i5_11600 26490.0 PROCESSOR www.slada.com
+www.slada.com -> Intel_Core_i5_12400F 30990.0 PROCESSOR www.slada.com
+www.slada.com -> AMD_Ryzen_7_5800X 35590.0 PROCESSOR www.slada.com
+www.slada.com -> AMD_Athlon_3000G 9990.0 PROCESSOR www.slada.com
+www.slada.com -> Intel_Core_i3_10100F 10990.0 PROCESSOR www.slada.com
+www.slada.com -> Intel_Celeron_G6900 7090.0 PROCESSOR www.slada.com
