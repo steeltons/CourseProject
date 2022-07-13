@@ -136,10 +136,10 @@ public class AVLTree<E extends Comparable<E>> implements Iterable<LinkedList<E>>
         return list;
     }
 
-    public boolean add(E key){
-        if(key == null) return false;
+    public void add(E key){
+        treeChanged = false;
+        if(key == null) return;
         root = add(key,root);
-        return true;
     }
 
     private Node add(E key, Node currentNode){
@@ -254,6 +254,7 @@ public class AVLTree<E extends Comparable<E>> implements Iterable<LinkedList<E>>
     }
 
     public boolean remove(E key){
+        treeChanged = false;
         if (key == null) return false;
         if(!contains(key)) return false;
         root = remove(key, root);

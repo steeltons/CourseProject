@@ -40,6 +40,35 @@ public class ProductKey {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, url);
+        int hash = 0;
+        if(name.length() % 3 != 0){
+            int sum = 0;
+            for(int i = 0; i < name.length() % 3; i++)
+                sum += name.charAt(i);
+            hash += sum * 31;
+        }
+        for(int i = name.length() % 3; i < name.length(); i+=3){
+            int sum = 0;
+            for (int j = 0; j < 3; j++){
+                sum+= name.charAt(i+j);
+            }
+            hash+= sum;
+        }
+
+        if(url.length() % 3 != 0){
+            int sum = 0;
+            for(int i = 0; i < url.length() % 3; i++)
+                sum += url.charAt(i);
+            hash += sum * 31;
+        }
+        for(int i = url.length() % 3; i < url.length(); i+=3){
+            int sum = 0;
+            for (int j = 0; j < 3; j++){
+                sum+= url.charAt(i+j);
+            }
+            hash+= sum;
+        }
+        return hash;
     }
+
 }

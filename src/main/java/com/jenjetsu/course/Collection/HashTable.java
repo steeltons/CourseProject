@@ -43,7 +43,7 @@ public class HashTable<K, V> implements Iterable<Entry<K, V>>{
     }
 
     public void put(K key, V value){
-        int index = (int) (firstHashFunction(key) % bucketCount);
+        int index = firstHashFunction(key);
         LogsDatabase.getInstance().add(DebugCategory.INSERT, "Добавляем пару <"+key.toString()+" : "+value.toString()+"> "+" текущий индекс "+index);
         if(table[index] != null && table[index].getKey().equals(key)){
             putItemToTable(index, key, value);
@@ -68,7 +68,6 @@ public class HashTable<K, V> implements Iterable<Entry<K, V>>{
         if(prev == null || tableCellsRemoveStatus[index]){
             tableCellsRemoveStatus[index] = false;
             currentBucketLoad++;
-            //LogsDatabase.getInstance().add("Текущая заполненость таблицы : "+bucketCount+" макксимум заполнения для пересоздания при добавлении : "+(bucketCount * loadFactor));
             if(currentBucketLoad >= bucketCount * loadFactor)
                 remakeTable(bucketCount * 2);
         }
@@ -175,21 +174,16 @@ public class HashTable<K, V> implements Iterable<Entry<K, V>>{
         return tableCellsRemoveStatus;
     }
 
-//    public Pair<Pair<K,V>, Boolean> getHashTable(){
-//        Pair<Object, Object> tt = new Pair<>();
-//        Pair<Object, Object> temp[] = new Pair<Object, Object>[10]();
-//    }
-
-    private Long firstHashFunction(K key){
-        Long hash = Math.abs((long) key.hashCode());
+    private int firstHashFunction(K key){
+        int hash = Math.abs(key.hashCode());
         LogsDatabase.getInstance().add(DebugCategory.FIRST_HASH,"Значение первичной хэш-функции для ключа "+key.toString()+" : "+hash+" индекс в таблице : "+(hash % bucketCount));
-        return Math.abs((long) key.hashCode());
+        return hash % bucketCount;
     }
 
-    private Long secondHashFunction(long keyHash, int step, int q1, int q2){
-        Long hash = Math.abs(keyHash + step * q1 + step * step * q2);
+    private int secondHashFunction(int keyHash, int step, int q1, int q2){
+        int hash = Math.abs(keyHash + step * q1 + step * step * q2);
         LogsDatabase.getInstance().add(DebugCategory.SECOND_HASH, "Значение вторичной хэш-функции для первичного хэша "+keyHash+" : "+hash+" индекс в таблице : "+(hash % bucketCount)+" шаг "+step+" q1 = "+q1+" q2 = "+q2);
-        return hash;
+        return hash % bucketCount;
     }
 
     private Long secondHashFunction(long keyHash, int step, int k){
@@ -201,27 +195,21 @@ public class HashTable<K, V> implements Iterable<Entry<K, V>>{
         final int q2 = bucketCount;
         int insertIndex = -1;
         final int oldIndex = currentIndex;
-        Long keyHash = firstHashFunction(key);
+        int keyHash = firstHashFunction(key);
         int step = 1;
         do {
-            currentIndex = (int) Math.abs((secondHashFunction(keyHash, step, q1, q2) % bucketCount));
-            //currentIndex = (int) (secondHashFunction(keyHash, step, 1) % bucketCount);
+            currentIndex = secondHashFunction(keyHash, step, q1, q2);
             if(table[currentIndex] == null) {
-                //LogsDatabase.getInstance().add("Встречена пустая ячейка");
                 return (insertIndex != -1) ? insertIndex : currentIndex;
             }
-            if(table[currentIndex] != null && tableCellsRemoveStatus[currentIndex]){
-                //LogsDatabase.getInstance().add("Запоминаем возможное место для вставки "+currentIndex);
-                if(insertIndex == -1)
+            if(table[currentIndex] != null && tableCellsRemoveStatus[currentIndex] && insertIndex == -1){
                     insertIndex = currentIndex;
             }
             if(table[currentIndex] != null && table[currentIndex].getKey().equals(key) && ! tableCellsRemoveStatus[currentIndex]) {
-                //LogsDatabase.getInstance().add("Ключи по индексу "+currentIndex+" совпадают, ячейка не удалена, перезапичываем");
                 return currentIndex;
             }
             step++;
         } while (oldIndex != currentIndex);
-        //LogsDatabase.getInstance().add("Пробежались по всем ячейкам");
         return (insertIndex != -1) ? insertIndex : currentIndex;
     }
 

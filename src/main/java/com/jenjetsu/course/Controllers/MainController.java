@@ -6,11 +6,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.Scanner;
 
-import com.jenjetsu.course.Business.EntityCreator;
-import com.jenjetsu.course.Business.ReadFilesLogic;
-import com.jenjetsu.course.Business.SaveFilesLogic;
+import com.jenjetsu.course.Business.*;
 import com.jenjetsu.course.Collection.LinkedList;
 import com.jenjetsu.course.Database.ProductDatabase;
 import com.jenjetsu.course.Database.ScreenTextDatabase;
@@ -18,10 +15,7 @@ import com.jenjetsu.course.Database.SiteDatabase;
 import com.jenjetsu.course.Entity.Product;
 import com.jenjetsu.course.Entity.ProductKey;
 import com.jenjetsu.course.Entity.Site;
-import com.jenjetsu.course.Stages.AboutStage;
-import com.jenjetsu.course.Stages.LogStage;
-import com.jenjetsu.course.Stages.SearchStage;
-import com.jenjetsu.course.utils.ObjectCreator;
+import com.jenjetsu.course.Stages.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,81 +37,68 @@ public class MainController {
     @FXML private TextField urlProduct;
     @FXML private TextField urlSite;
 
-    @FXML
-    void createProduct(ActionEvent event) {
+    @FXML void createProduct(ActionEvent event) {
         setDefault();
+        boolean flag = false;
         if(urlProduct.getText().isEmpty()){
             urlProduct.setStyle("-fx-border-color: red;");
-            showAlertMessage("Field error","Ошибка ввода, проверьте поля");
-            return;
+            flag = true;
         }
         if(nameProduct.getText().isEmpty()){
             nameProduct.setStyle("-fx-border-color: red;");
-            showAlertMessage("Field error","Ошибка ввода, проверьте поля");
-            return;
+            flag = true;
         }
         if(priceProduct.getText().isEmpty()){
             priceProduct.setStyle("-fx-border-color: red;");
-            showAlertMessage("Field error","Ошибка ввода, проверьте поля");
-            return;
+            flag = true;
         }
         if(typeProduct.getText().isEmpty()){
             typeProduct.setStyle("-fx-border-color: red;");
-            showAlertMessage("Field error","Ошибка ввода, проверьте поля");
-            return;
+            flag = true;
         }
-        new EntityCreator().createProduct(nameProduct.getText(), priceProduct.getText(), typeProduct.getText(), urlProduct.getText());
+        if(flag){
+            new WarningAlert("Filed error", "Field error", "Ошибка ввода, проверьте поля");
+        } else
+            new EntityCreator().createProduct(nameProduct.getText(), priceProduct.getText(), typeProduct.getText(), urlProduct.getText());
     }
 
-    @FXML
-    void createSite(ActionEvent event) {
+    @FXML void createSite(ActionEvent event) {
         setDefault();
+        boolean flag = false;
         if(urlSite.getText().isEmpty() || (!urlSite.getText().startsWith("www.") && !urlSite.getText().contains("https://"))){
             urlSite.setStyle("-fx-border-color: red;");
-            showAlertMessage("Field error","Ошибка ввода, проверьте поля");
-            return;
+            flag = true;
         }
         if(nameSite.getText().isEmpty()){
             nameSite.setStyle("-fx-border-color: red;");
-            showAlertMessage("Field error","Ошибка ввода, проверьте поля");
-            return;
+            flag = true;
         }
         if(regionSite.getText().isEmpty()){
             regionSite.setStyle("-fx-border-color: red;");
-            showAlertMessage("Field error","Ошибка ввода, проверьте поля");
-            return;
+            flag = true;
         }
-        new EntityCreator().createSite(urlSite.getText(), nameSite.getText(), regionSite.getText());
+        if(flag)
+            new WarningAlert("Filed error", "Field error", "Ошибка ввода, проверьте поля");
+        else
+            new EntityCreator().createSite(urlSite.getText(), nameSite.getText(), regionSite.getText());
     }
 
     @FXML
     void removeProduct(ActionEvent event) {
         setDefault();
-        if(urlProduct.getText().isEmpty() || (!urlProduct.getText().startsWith("www.") && !urlProduct.getText().contains("https://"))){
+        boolean flag = false;
+        if(urlProduct.getText().isEmpty()){
             urlProduct.setStyle("-fx-border-color: red;");
-            showAlertMessage("Field error","Ошибка ввода, проверьте поля");
-            return;
+            flag = true;
         }
         if(nameProduct.getText().isEmpty()){
             nameProduct.setStyle("-fx-border-color: red;");
-            showAlertMessage("Field error","Ошибка ввода, проверьте поля");
-            return;
+            flag = true;
         }
-        ProductDatabase database = ProductDatabase.getInstance();
-        String inputUrl = urlProduct.getText();
-        ProductKey key = null;
-        if(database.contains(new ProductKey(nameProduct.getText(), inputUrl.replace("www.", "https://")))){
-            key = new ProductKey(nameProduct.getText(), inputUrl.replace("www.", "https://"));
-        } else if(database.contains(new ProductKey(nameProduct.getText(),inputUrl.replace("https://","www.")))){
-            key = new ProductKey(nameProduct.getText(),inputUrl.replace("https://","www."));
-        }
-        if(key != null){
-            Product product = database.find(key);
-            database.remove(key);
-            ScreenTextDatabase.getInstance().removeProduct(product.toString());
-        } else {
-            showAlertMessage("Product create error","Продукт с таким именеи и URL "+nameProduct.getText()+" "+urlProduct.getText()+" не существует");
-        }
+        if(flag)
+            new WarningAlert("Filed error", "Field error", "Ошибка ввода, проверьте поля");
+        else
+            new EntityRemover().removeProduct(nameProduct.getText(), urlProduct.getText());
     }
 
     @FXML
@@ -125,32 +106,10 @@ public class MainController {
         setDefault();
         if(urlSite.getText().isEmpty()){
             urlSite.setStyle("-fx-border-color: red;");
-            showAlertMessage("Field error","Ошибка ввода, проверьте поля");
+            new WarningAlert("Field error","Field error","Ошибка ввода, проверьте поля");
             return;
         }
-        SiteDatabase database = SiteDatabase.getInstance();
-        String key = "";
-        if(database.contains(urlSite.getText().replace("www.","https://"))){
-            key = urlSite.getText().replace("www.","https://");
-        } else if(database.contains(urlSite.getText().replace("https://","www."))){
-            key = urlSite.getText().replace("https://","www.");
-        }
-        if(!key.isEmpty()){
-            Site site = database.find(key);
-            LinkedList<Product> productLinkedList = ProductDatabase.getInstance().getListByUrl(key);
-            if(productLinkedList.size() > 0 && !forcedRemove.isSelected()){
-                showAlertMessage("Site remove error","Ошибка удаления сайта "+urlSite.getText()+". Данный сайт содержит продукты в кол-ве "+productLinkedList.size()+". Удалите все продукты вручную или выберите опцию forced remove");
-                return;
-            }
-            for(Product product : productLinkedList){
-                ProductDatabase.getInstance().remove(product);
-                ScreenTextDatabase.getInstance().removeProduct(product.toString());
-            }
-            database.remove(key);
-            ScreenTextDatabase.getInstance().removeSite(site.toString());
-        } else {
-            showAlertMessage("Site create error","Сайт с URL "+urlSite.getText()+" не существует");
-        }
+        new EntityRemover().removeSite(urlSite.getText(), forcedRemove.isSelected());
     }
 
     @FXML
@@ -228,66 +187,60 @@ public class MainController {
         }
     }
 
-    @FXML
-    void ShowProductScreen(ActionEvent event) throws IOException {
-        File file = new File("C:\\Users\\User\\IdeaProjects\\Course\\src\\main\\resources\\com\\jenjetsu\\course\\ProductTableView.fxml");
-        FXMLLoader loader = new FXMLLoader(file.toURL());
-        Stage stage = new Stage();
-        stage.setTitle("Site table");
-        stage.initModality(Modality.WINDOW_MODAL);
-        Scene scene = new Scene(loader.load(), 700, 600);
-        stage.setScene(scene);
+    @FXML void ShowProductScreen(ActionEvent event) throws IOException {
+        Stage stage = new ProductHashStage();
+        stage.initOwner(priceProduct.getScene().getWindow());
         stage.show();
     }
 
-    @FXML
-    void showLogScreen(ActionEvent event) throws IOException {
+    @FXML void showLogScreen(ActionEvent event) throws IOException {
         Stage stage = new LogStage();
         stage.initOwner(regionSite.getScene().getWindow());
         stage.show();
     }
 
-    @FXML
-    void showSearchScreen(ActionEvent event) throws IOException {
+    @FXML void showSearchScreen(ActionEvent event) throws IOException {
         SearchStage stage = new SearchStage();
         stage.initOwner(regionSite.getScene().getWindow());
         stage.show();
     }
 
-    @FXML
-    void showSiteTableScreen(ActionEvent event) throws IOException {
-        File file = new File("C:\\Users\\User\\IdeaProjects\\Course\\src\\main\\resources\\com\\jenjetsu\\course\\HashTableView.fxml");
-        FXMLLoader loader = new FXMLLoader(file.toURL());
-        Stage stage = new Stage();
-        stage.setTitle("Site table");
-        stage.initModality(Modality.WINDOW_MODAL);
-        Scene scene = new Scene(loader.load(), 700, 600);
-        stage.setScene(scene);
+    @FXML void showSiteTableScreen(ActionEvent event) throws IOException {
+        Stage stage = new SiteHashStage();
+        stage.initOwner(urlProduct.getScene().getWindow());
         stage.show();
     }
 
-    @FXML
-    void displayProductTreeView(ActionEvent event) throws IOException {
-        File file = new File("C:\\Users\\User\\IdeaProjects\\Course\\src\\main\\resources\\com\\jenjetsu\\course\\ProductTreeView.fxml");
-        FXMLLoader loader = new FXMLLoader(file.toURL());
-        Stage stage = new Stage();
-        stage.setTitle("Product tree container");
-        stage.initModality(Modality.WINDOW_MODAL);
-        Scene scene = new Scene(loader.load(), 500, 500);
-        stage.setScene(scene);
+    @FXML void displayProductTreeView(ActionEvent event) throws IOException {
+        Stage stage = new ProductTreeStage();
+        stage.initOwner(urlProduct.getScene().getWindow());
         stage.show();
     }
 
-    @FXML
-    void displaySiteTreeView(ActionEvent event) throws IOException {
-        File file = new File("C:\\Users\\User\\IdeaProjects\\Course\\src\\main\\resources\\com\\jenjetsu\\course\\SiteTreeView.fxml");
-        FXMLLoader loader = new FXMLLoader(file.toURL());
-        Stage stage = new Stage();
-        stage.setTitle("Site tree container");
-        stage.initModality(Modality.WINDOW_MODAL);
-        Scene scene = new Scene(loader.load(), 500, 500);
-        stage.setScene(scene);
+    @FXML void displaySiteTreeView(ActionEvent event) throws IOException {
+        Stage stage = new SiteTreeStage();
+        stage.initOwner(priceProduct.getScene().getWindow());
         stage.show();
+    }
+
+    @FXML void readProductFile(ActionEvent event) throws FileNotFoundException { new ReadFilesLogic().readSites(); }
+
+    @FXML void readSiteFile(ActionEvent event) throws FileNotFoundException { new ReadFilesLogic().readProducts(); }
+
+    @FXML private void saveSitesToFile(ActionEvent event){ new SaveFilesLogic().saveSites(); }
+
+    @FXML private void saveProductsToFile(ActionEvent event){ new SaveFilesLogic().saveProducts(); }
+
+    @FXML private void close(ActionEvent event){
+        Stage stage = (Stage) priceProduct.getScene().getWindow();
+        stage.close();
+    }
+
+    @FXML private void about(){
+        Stage currentStage = (Stage) regionSite.getScene().getWindow();
+        Stage about = new AboutStage();
+        about.initOwner(currentStage);
+        about.show();
     }
 
     private void showAlertMessage(String alertName, String message){
@@ -296,40 +249,6 @@ public class MainController {
         alert.setContentText(message);
         alert.setHeaderText("Result");
         alert.showAndWait();
-    }
-
-    @FXML
-    void readProductFile(ActionEvent event) throws FileNotFoundException {
-        new ReadFilesLogic().readSites();
-    }
-
-    @FXML
-    void readSiteFile(ActionEvent event) throws FileNotFoundException {
-        new ReadFilesLogic().readProducts();
-    }
-
-    @FXML
-    private void saveSitesToFile(ActionEvent event){
-        new SaveFilesLogic().saveSites();
-    }
-
-    @FXML
-    private void saveProductsToFile(ActionEvent event){
-        new SaveFilesLogic().saveProducts();
-    }
-
-    @FXML
-    private void close(ActionEvent event){
-        Stage stage = (Stage) priceProduct.getScene().getWindow();
-        stage.close();
-    }
-
-    @FXML
-    private void about(){
-        Stage currentStage = (Stage) regionSite.getScene().getWindow();
-        Stage about = new AboutStage();
-        about.initOwner(currentStage);
-        about.show();
     }
 
     private void setDefault(){

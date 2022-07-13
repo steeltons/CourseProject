@@ -51,7 +51,21 @@ public class Site implements Comparable<Site>{
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, name, region);
+        int hash = 0;
+        if(url.length() % 3 != 0){
+            int sum = 0;
+            for(int i = 0; i < url.length() % 3; i++)
+                sum += url.charAt(i);
+            hash += sum * 31;
+        }
+        for(int i = url.length() % 3; i < url.length(); i+=3){
+            int sum = 0;
+            for (int j = 0; j < 3; j++){
+                sum+= url.charAt(i+j);
+            }
+            hash+= sum;
+        }
+        return hash;
     }
 
     @Override
